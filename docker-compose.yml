@@ -1,75 +1,33 @@
-version: "3.0"
+version: '3.8'
 
-services:
+services: 
   ansible-host:
-    hostname: ansible-host
-    build:
-      context: .
-      dockerfile: Dockerfile.ansible
-    command: ['sleep', 'infinity']
+    hostname: ansible-host 
+    build: .
+    container_name: ansible-host 
+    volumes: 
+      - ./roles:/etc/ansible/roles 
+      - ./playbook.yml:/etc/ansible/playbook.yml 
+      - ./inventory.ini:/etc/ansible/inventory.ini
+      - ./ansible.cfg:/etc/ansible/ansible.cfg     
+      - ./run_playbook.sh:/usr/local/bin/run_playbook.sh 
+    command: ["sudo", "./usr/local/bin/run_playbook.sh"]
     networks:
-      - vaiolabs.io
-    volumes:
-      - ../../../:/home/ansible/ansible_course
-  node1:
-    hostname: node1
+      - ansible_k3s
+
+  ansible-agent:
+    hostname: ansible-agent
+    container_name: ansible-agent 
     build:
       context: .
-      dockerfile: Dockerfile.deb
+      dockerfile: Dockerfile.agent
     environment:
-      SSH_USERNAME: docker
-      SSH_USERPASS: docker
-    command: ["/usr/sbin/sshd", "-D"]
+      SSH_USERNAME: doron
+      SSH_USERPASS: doron
+    command: ["sudo", "/usr/sbin/sshd", "-D"]
     networks:
-      - vaiolabs.io
-  node3:
-    hostname: node3
-    build:
-      context: .
-      dockerfile: Dockerfile.deb
-    environment:
-      SSH_USERNAME: docker
-      SSH_USERPASS: docker
-    command: ["/usr/sbin/sshd", "-D"]
-    networks:
-      - vaiolabs.io
-  node2:
-    hostname: node2
-    build:
-      context: .
-      dockerfile: Dockerfile.rpm
-    environment:
-      SSH_USERNAME: docker
-      SSH_USERPASS: docker
-    command: ["/usr/sbin/sshd", "-D"]
-    networks:
-      - vaiolabs.io
-  node4:
-    hostname: node4
-    build:
-      context: .
-      dockerfile: Dockerfile.rpm
-    environment:
-      SSH_USERNAME: docker
-      SSH_USERPASS: docker
-    command: ["/usr/sbin/sshd", "-D"]
-    networks:
-      - vaiolabs.io
-  node_app:
-    hostname: task_app
-    build:
-      context: .
-      dockerfile: Dockerfile.app
-    environment:
-      SSH_USERNAME: docker
-      SSH_USERPASS: docker
-    command: ["/usr/sbin/sshd", "-D"]
-    ports: 
-      - 8000:8000
-      - 5000:5000
-    networks:
-      - vaiolabs.io
+      - ansible_k3s
 
 networks:
-  vaiolabs.io:
-    name: vaiolabs.io
+  ansible_k3s:
+    driver: bridge

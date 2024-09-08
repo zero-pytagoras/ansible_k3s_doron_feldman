@@ -1,0 +1,13 @@
+---
+  - name: Install K3s 
+    copy: 
+      src: "{{ item.src }}" 
+      dest: "{{ item.dest }}" 
+      mode: '0755'
+    loop:
+      - src: /etc/ansible/roles/k3s_install/files/k3s
+        dest: /usr/local/bin/k3s
+      - src: /etc/ansible/roles/k3s_install/files/k3s-killall.sh
+        dest: /usr/local/bin/k3s-killall.sh
+      - src: /etc/ansible/roles/k3s_install/files/k3s-uninstall.sh
+        dest: /usr/local/bin/k3s-uninstall.sh
